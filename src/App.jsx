@@ -1,4 +1,4 @@
-import { HashRouter, Routes, Route } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 import Home from "./pages/Home";
 import Admin from "./pages/Admin";
 import Sorteio from "./pages/Sorteio";
@@ -8,7 +8,6 @@ import ProtectedRoute from "./components/ProtectedRoute";
 
 export default function App() {
   return (
-    <HashRouter>
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/sorteio" element={<Sorteio />} />
@@ -47,6 +46,5 @@ export default function App() {
           }
         />
       </Routes>
-    </HashRouter>
   );
 }
