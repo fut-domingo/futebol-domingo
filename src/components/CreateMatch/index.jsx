@@ -12,6 +12,7 @@ import {
 import { db } from "../../services/firebase";
 import { usePlayers } from "../../hooks/usePlayers";
 import { computeMvpFromMatch } from "../../utils/mvp";
+import { computeRating } from "../../utils/rating";
 
 const tagStyle = {
   fontSize: 11,
@@ -30,6 +31,32 @@ const btnStyle = {
   background: "#fff",
   fontWeight: 1000,
   cursor: "pointer",
+}
+const STAT_FIELDS = [
+  { key: "goals", label: "Gols" },
+  { key: "assists", label: "Assistências" },
+  { key: "shotsOnTarget", label: "Chutes no gol" },
+  { key: "shots", label: "Chutes" },
+  { key: "passes", label: "Passes" },
+  { key: "passesCompleted", label: "Passes certos" },
+  { key: "tackles", label: "Desarmes" },
+  { key: "dispossessions", label: "Perda de posse" },
+  { key: "foulsCommitted", label: "Faltas cometidas" },
+  { key: "foulsSuffered", label: "Faltas sofridas" },
+];
+
+const statLabelStyle = {
+  fontSize: 11,
+  fontWeight: 900,
+  color: "rgba(42,0,79,0.75)",
+};
+
+const statInputStyle = {
+  width: "100%",
+  padding: "8px 10px",
+  borderRadius: 10,
+  border: "1px solid #efe6ff",
+  outline: "none",
 };
 
 function initials(name = "") {
@@ -72,7 +99,20 @@ export default function CreateMatch() {
     setTeamA((prev) => prev.filter((p) => p.id !== player.id));
     setTeamB((prev) => prev.filter((p) => p.id !== player.id));
 
-    const payload = { ...player, goals: 0, assists: 0 };
+    const payload = {
+  ...player,
+  goals: 0,
+  assists: 0,
+  shotsOnTarget: 0,
+  shots: 0,
+  passes: 0,
+  passesCompleted: 0,
+  tackles: 0,
+  dispossessions: 0,
+  foulsCommitted: 0,
+  foulsSuffered: 0,
+};
+
 
     if (team === "A") setTeamA((prev) => [...prev, payload]);
     if (team === "B") setTeamB((prev) => [...prev, payload]);
@@ -196,21 +236,52 @@ export default function CreateMatch() {
     scoreA,
     scoreB,
 
-    teamA: teamA.map((p) => ({
-      playerId: p.id,
-      name: p.name,
-      photoURL: p.photoURL || "",
-      goals: Number(p.goals || 0),
-      assists: Number(p.assists || 0),
-    })),
+   teamA: teamA.map((p) => {
+  const stats = {
+    goals: Number(p.goals || 0),
+    assists: Number(p.assists || 0),
+    shotsOnTarget: Number(p.shotsOnTarget || 0),
+    shots: Number(p.shots || 0),
+    passes: Number(p.passes || 0),
+    passesCompleted: Number(p.passesCompleted || 0),
+    tackles: Number(p.tackles || 0),
+    dispossessions: Number(p.dispossessions || 0),
+    foulsCommitted: Number(p.foulsCommitted || 0),
+    foulsSuffered: Number(p.foulsSuffered || 0),
+  };
 
-    teamB: teamB.map((p) => ({
-      playerId: p.id,
-      name: p.name,
-      photoURL: p.photoURL || "",
-      goals: Number(p.goals || 0),
-      assists: Number(p.assists || 0),
-    })),
+  return {
+    playerId: p.id,
+    name: p.name,
+    photoURL: p.photoURL || "",
+    ...stats,
+    rating: computeRating(stats),
+  };
+}),
+
+
+    teamB: teamB.map((p) => {
+  const stats = {
+    goals: Number(p.goals || 0),
+    assists: Number(p.assists || 0),
+    shotsOnTarget: Number(p.shotsOnTarget || 0),
+    shots: Number(p.shots || 0),
+    passes: Number(p.passes || 0),
+    passesCompleted: Number(p.passesCompleted || 0),
+    tackles: Number(p.tackles || 0),
+    dispossessions: Number(p.dispossessions || 0),
+    foulsCommitted: Number(p.foulsCommitted || 0),
+    foulsSuffered: Number(p.foulsSuffered || 0),
+  };
+
+  return {
+    playerId: p.id,
+    name: p.name,
+    photoURL: p.photoURL || "",
+    ...stats,
+    rating: computeRating(stats),
+  };
+}),
   };
 
   // ✅ MVP calculado com base na partida (gols e assists)
@@ -398,8 +469,8 @@ export default function CreateMatch() {
 
       <hr style={{ margin: "18px 0" }} />
 
-      {/* Time Azul */}
-      <h3 style={{ margin: "10px 0", color: "#1d4ed8" }}>Time Azul (gols / assistências)</h3>
+            {/* Time Azul */}
+      <h3 style={{ margin: "10px 0", color: "#1d4ed8" }}>Time Azul (estatísticas)</h3>
       {teamA.length === 0 ? (
         <p>Nenhum jogador no Time Azul.</p>
       ) : (
@@ -407,48 +478,57 @@ export default function CreateMatch() {
           <div
             key={player.id}
             style={{
-              display: "grid",
-              gridTemplateColumns: "1fr 90px 90px 110px",
-              gap: 10,
-              alignItems: "center",
-              marginBottom: 8,
-              padding: "10px 12px",
+              marginBottom: 10,
+              padding: "12px 12px",
               border: "1px solid #efe6ff",
-              borderRadius: 12,
+              borderRadius: 14,
               background: "#fff",
             }}
           >
-            <strong style={{ color: "#2a004f", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-              {player.name}
-            </strong>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
+              <strong
+                style={{
+                  color: "#2a004f",
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                  whiteSpace: "nowrap",
+                }}
+              >
+                {player.name}
+              </strong>
 
-            <input
-              type="number"
-              min="0"
-              placeholder="Gols"
-              value={player.goals}
-              onChange={(e) => updatePlayerField(teamA, setTeamA, player.id, "goals", e.target.value)}
-              style={{ width: "100%", padding: "8px 10px", borderRadius: 10, border: "1px solid #efe6ff" }}
-            />
+              <button type="button" onClick={() => removeFromTeams(player.id)} style={{ ...btnStyle, opacity: 0.9 }}>
+                Remover
+              </button>
+            </div>
 
-            <input
-              type="number"
-              min="0"
-              placeholder="Assist"
-              value={player.assists}
-              onChange={(e) => updatePlayerField(teamA, setTeamA, player.id, "assists", e.target.value)}
-              style={{ width: "100%", padding: "8px 10px", borderRadius: 10, border: "1px solid #efe6ff" }}
-            />
-
-            <button type="button" onClick={() => removeFromTeams(player.id)} style={{ ...btnStyle, opacity: 0.85 }}>
-              Remover
-            </button>
+            <div
+              style={{
+                marginTop: 10,
+                display: "grid",
+                gridTemplateColumns: "repeat(auto-fit, minmax(140px, 1fr))",
+                gap: 10,
+              }}
+            >
+              {STAT_FIELDS.map((f) => (
+                <label key={f.key} style={{ display: "grid", gap: 6 }}>
+                  <span style={statLabelStyle}>{f.label}</span>
+                  <input
+                    type="number"
+                    min="0"
+                    value={player?.[f.key] ?? 0}
+                    onChange={(e) => updatePlayerField(teamA, setTeamA, player.id, f.key, e.target.value)}
+                    style={statInputStyle}
+                  />
+                </label>
+              ))}
+            </div>
           </div>
         ))
       )}
 
       {/* Time Vermelho */}
-      <h3 style={{ margin: "18px 0 10px 0", color: "#b91c1c" }}>Time Vermelho (gols / assistências)</h3>
+      <h3 style={{ margin: "18px 0 10px 0", color: "#b91c1c" }}>Time Vermelho (estatísticas)</h3>
       {teamB.length === 0 ? (
         <p>Nenhum jogador no Time Vermelho.</p>
       ) : (
@@ -456,42 +536,51 @@ export default function CreateMatch() {
           <div
             key={player.id}
             style={{
-              display: "grid",
-              gridTemplateColumns: "1fr 90px 90px 110px",
-              gap: 10,
-              alignItems: "center",
-              marginBottom: 8,
-              padding: "10px 12px",
+              marginBottom: 10,
+              padding: "12px 12px",
               border: "1px solid #efe6ff",
-              borderRadius: 12,
+              borderRadius: 14,
               background: "#fff",
             }}
           >
-            <strong style={{ color: "#2a004f", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-              {player.name}
-            </strong>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
+              <strong
+                style={{
+                  color: "#2a004f",
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                  whiteSpace: "nowrap",
+                }}
+              >
+                {player.name}
+              </strong>
 
-            <input
-              type="number"
-              min="0"
-              placeholder="Gols"
-              value={player.goals}
-              onChange={(e) => updatePlayerField(teamB, setTeamB, player.id, "goals", e.target.value)}
-              style={{ width: "100%", padding: "8px 10px", borderRadius: 10, border: "1px solid #efe6ff" }}
-            />
+              <button type="button" onClick={() => removeFromTeams(player.id)} style={{ ...btnStyle, opacity: 0.9 }}>
+                Remover
+              </button>
+            </div>
 
-            <input
-              type="number"
-              min="0"
-              placeholder="Assist"
-              value={player.assists}
-              onChange={(e) => updatePlayerField(teamB, setTeamB, player.id, "assists", e.target.value)}
-              style={{ width: "100%", padding: "8px 10px", borderRadius: 10, border: "1px solid #efe6ff" }}
-            />
-
-            <button type="button" onClick={() => removeFromTeams(player.id)} style={{ ...btnStyle, opacity: 0.85 }}>
-              Remover
-            </button>
+            <div
+              style={{
+                marginTop: 10,
+                display: "grid",
+                gridTemplateColumns: "repeat(auto-fit, minmax(140px, 1fr))",
+                gap: 10,
+              }}
+            >
+              {STAT_FIELDS.map((f) => (
+                <label key={f.key} style={{ display: "grid", gap: 6 }}>
+                  <span style={statLabelStyle}>{f.label}</span>
+                  <input
+                    type="number"
+                    min="0"
+                    value={player?.[f.key] ?? 0}
+                    onChange={(e) => updatePlayerField(teamB, setTeamB, player.id, f.key, e.target.value)}
+                    style={statInputStyle}
+                  />
+                </label>
+              ))}
+            </div>
           </div>
         ))
       )}

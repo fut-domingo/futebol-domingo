@@ -57,6 +57,16 @@ input[type="number"], input[type="text"], input[type="date"] {
   background: rgba(255,255,255,0.9);
 }
 
+.userEmail{
+  font-weight: 900;
+  color: rgba(42,0,79,0.65);
+}
+
+@media (max-width: 520px){
+  .userEmail{
+    display: none;
+  }
+}
 
   `;
   export default GlobalStyle;

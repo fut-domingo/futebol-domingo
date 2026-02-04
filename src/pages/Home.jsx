@@ -1,38 +1,19 @@
 import styled from "styled-components";
 import { Link } from "react-router-dom";
-import { useEffect, useMemo, useState } from "react";
-
 import Classification from "../components/Classification";
 import Matches from "../components/Matches";
 import TopScorers from "../components/TopScorers";
 import AuthButtons from "../components/AuthButtons";
-
-import MvpModal from "../components/MvpModal";
-import { useMatches } from "../hooks/useMatches";
+import { useAuth } from "../hooks/useAuth";
 
 const Page = styled.div`
   padding: 18px;
   background: #f6f6fb;
   min-height: 100vh;
-`;
 
-const TopBar = styled.div`
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 12px;
-  flex-wrap: wrap;
-`;
-
-const AdminBtn = styled(Link)`
-  text-decoration: none;
-  padding: 10px 14px;
-  border-radius: 999px;
-  border: 1px solid #efe6ff;
-  background: #ffffff;
-  color: #5b2cff;
-  font-weight: 900;
+  @media (max-width: 520px) {
+    padding: 14px;
+  }
 `;
 
 const Hero = styled.div`
@@ -42,9 +23,10 @@ const Hero = styled.div`
   gap: 12px;
   margin-bottom: 14px;
 
-  @media (max-width: 980px) {
+  @media (max-width: 520px) {
     flex-direction: column;
-    align-items: flex-start;
+    align-items: stretch;
+    gap: 12px;
   }
 `;
 
@@ -60,17 +42,47 @@ const H1 = styled.h1`
   font-weight: 1000;
   color: #2a004f;
   letter-spacing: -0.4px;
+
+  @media (max-width: 520px) {
+    font-size: 32px;
+    line-height: 1.05;
+  }
 `;
 
 const Sub = styled.div`
   font-size: 13px;
   color: rgba(42, 0, 79, 0.65);
+  font-weight: 700;
+`;
+
+const TopBar = styled.div`
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+
+  @media (max-width: 520px) {
+    justify-content: flex-start;
+    gap: 10px;
+  }
+`;
+
+const PillBtn = styled(Link)`
+  text-decoration: none;
+  padding: 10px 14px;
+  border-radius: 999px;
+  border: 1px solid #efe6ff;
+  background: #ffffff;
+  color: #5b2cff;
+  font-weight: 900;
+  white-space: nowrap;
 `;
 
 const TopGrid = styled.div`
   display: grid;
   grid-template-columns: 1.25fr 0.75fr;
-  gap: 18px;
+  gap: 8px;
   align-items: start;
 
   @media (max-width: 980px) {
@@ -82,55 +94,17 @@ const BottomGrid = styled.div`
   margin-top: 18px;
 `;
 
-/** ✅ MVP Modal: aparece uma vez por partida nova */
-const STORAGE_KEY = "lastSeenMvpMatchId";
 
-function matchSortKey(m) {
-  if (m?.matchDate) return new Date(m.matchDate + "T12:00:00").getTime();
-  if (m?.createdAt?.seconds) return m.createdAt.seconds * 1000;
-  if (m?.createdAt) return new Date(m.createdAt).getTime();
-  return 0;
-}
+
+const ADMIN_EMAILS = ["bolinhafutebol@gmail.com"]; // <- coloque o seu aqui (pode ter mais de 1)
 
 export default function Home() {
-  const matches = useMatches();
-
-  // pega a última partida JOGADA (played / processedAt)
-  const latestPlayed = useMemo(() => {
-    const played = (matches ?? []).filter((m) => m.status === "played" || m.processedAt);
-    played.sort((a, b) => matchSortKey(a) - matchSortKey(b));
-    return played[played.length - 1] || null;
-  }, [matches]);
-
-  const [mvpOpen, setMvpOpen] = useState(false);
-
-  useEffect(() => {
-    if (!latestPlayed?.id) return;
-    if (!latestPlayed?.mvp) return;
-
-    const seen = localStorage.getItem(STORAGE_KEY);
-    if (seen !== latestPlayed.id) setMvpOpen(true);
-  }, [latestPlayed?.id, latestPlayed?.mvp]);
-
-  function closeMvp() {
-    if (latestPlayed?.id) localStorage.setItem(STORAGE_KEY, latestPlayed.id);
-    setMvpOpen(false);
-  }
+  const { user } = useAuth();
+  
+  const isAdmin = user?.email === "SEU_EMAIL@gmail.com";
 
   return (
     <Page>
-      {/* ✅ Modal MVP */}
-      <MvpModal
-        open={mvpOpen}
-        mvp={latestPlayed?.mvp}
-        matchLabel={
-          latestPlayed?.matchDate
-            ? `Partida de ${latestPlayed.matchDate.split("-").reverse().join("/")}`
-            : "Última partida"
-        }
-        onClose={closeMvp}
-      />
-
       <Hero>
         <HeroTitle>
           <H1>Futebol de Domingo</H1>
@@ -138,8 +112,8 @@ export default function Home() {
         </HeroTitle>
 
         <TopBar>
-          <AdminBtn to="/admin">Painel Admin</AdminBtn>
-          <AdminBtn to="/sorteio">Sorteio</AdminBtn>
+          {isAdmin && <AdminBtn to="/admin">Painel Admin</AdminBtn>}
+          <PillBtn to="/sorteio">Sorteio</PillBtn>
           <AuthButtons />
         </TopBar>
       </Hero>

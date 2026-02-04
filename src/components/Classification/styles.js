@@ -18,7 +18,7 @@ export const Header = styled.div`
 
 export const Title = styled.h2`
   margin: 0;
-  font-size: 34px;
+  font-size: 30px;
   font-weight: 800;
   letter-spacing: -0.5px;
 `;
@@ -46,8 +46,17 @@ export const Pill = styled.div`
 `;
 
 export const TableWrap = styled.div`
-  overflow-x: auto;
-  scroll-behavior: smooth;
+  overflow: auto;
+  border-radius: 18px;
+
+  /* ✅ limita altura pra mostrar mais ou menos ~10 linhas */
+  max-height: 1085px;
+
+  /* deixa o scroll mais suave no mobile */
+  -webkit-overflow-scrolling: touch;
+
+  /* opcional: barra mais discreta */
+  scrollbar-width: thin;
 `;
 
 
@@ -68,6 +77,12 @@ export const Th = styled.th`
   width: ${(p) => p.$w || "auto"};
   max-width: ${(p) => p.$w || "none"};
   text-align: ${(p) => p.$align || "left"};
+
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background: rgba(255,255,255,0.95);
+  backdrop-filter: blur(6px);
 
   padding: 10px 12px;
   font-size: 11px;
@@ -91,7 +106,7 @@ export const Td = styled.td`
 
   padding: 10px 12px;
   border-bottom: 1px solid #f2f2f2;
-  font-size: 13px;
+  font-size: 15px;
   white-space: nowrap;
 `;
 

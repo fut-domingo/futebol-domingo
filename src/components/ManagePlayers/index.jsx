@@ -140,7 +140,7 @@ positions: Array.isArray(d.positions) ? d.positions : [],
               </div>
 
               <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
-                  {["ZG", "MC", "ATA"].map((pos) => (
+                  {["ZG", "MC","MEI", "ATA"].map((pos) => (
                 <label key={pos} style={{ display: "flex", gap: 6, alignItems: "center", fontWeight: 800, color: "#2a004f" }}>
                 <input
                   type="checkbox"

@@ -3,6 +3,7 @@ import AddPlayer from "../components/AddPlayer";
 import CreateMatch from "../components/CreateMatch";
 import { Link } from "react-router-dom";
 import ManagePlayers from "../components/ManagePlayers";
+import CriarPartida from "./CriarPartida";
 
 const Page = styled.div`
   padding: 18px;
@@ -54,7 +55,7 @@ export default function Admin() {
 
       <AddPlayer />
       <ManagePlayers />
-      <CreateMatch />
+      
     </Page>
   );
 }

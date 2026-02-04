@@ -99,6 +99,24 @@ const Avatar = styled.div`
   color: #3a2cff;
 
   img { width: 100%; height: 100%; object-fit: cover; }
+
+  @media (max-width: 520px) {
+  padding: 10px 12px;
+  border-radius: 16px;
+
+  .avatar {
+    width: 34px;
+    height: 34px;
+  }
+
+  .name {
+    font-size: 16px;
+  }
+
+  .meta {
+    font-size: 12px;
+  }
+}
 `;
 
 const Name = styled.div`
@@ -226,6 +244,8 @@ const DateInput = styled.input`
   color: #2a004f;
 `;
 
+
+
 function initials(name = "") {
   const parts = name.trim().split(/\s+/);
   return ((parts[0]?.[0] ?? "") + (parts[1]?.[0] ?? "")).toUpperCase();
@@ -321,9 +341,11 @@ async function saveScheduledMatch(matchDate, teamAzul, teamVermelho) {
   alert("Sorteio salvo como partida agendada! Depois é só abrir e lançar gols/assist.");
 }
 
+
 export default function Sorteio() {
   const players = usePlayers();
-
+  
+  
   const sortedPlayers = useMemo(() => {
     return [...players].sort((a, b) =>
       (a.name ?? "").localeCompare(b.name ?? "", "pt-BR")
@@ -507,6 +529,7 @@ export default function Sorteio() {
   }
 
   return (
+    
     <Page>
       <Top>
         <div>
@@ -518,7 +541,7 @@ export default function Sorteio() {
 
         <Buttons>
           <BtnLink to="/">Home</BtnLink>
-          <BtnLink to="/admin">Admin</BtnLink>
+          {/* <BtnLink to="/admin">Admin</BtnLink> */}
         </Buttons>
       </Top>
 

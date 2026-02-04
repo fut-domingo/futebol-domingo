@@ -18,8 +18,9 @@ export default function Classification() {
   const wrapRef = useRef(null);
 
   // ✅ default correto: rank ASC (1,2,3...)
-  const [sortKey, setSortKey] = useState("rank");
-  const [sortDir, setSortDir] = useState("asc");
+  const [sortKey, setSortKey] = useState("points");
+  const [sortDir, setSortDir] = useState("desc");
+
 
   function toggleSort(key) {
     setSortKey((prevKey) => {
@@ -102,15 +103,15 @@ export default function Classification() {
                 Jogador
               </Th>
 
-              <Th $align="center" $w="44px" onClick={() => toggleSort("games")} style={{ cursor: "pointer" }}>J</Th>
+              <Th $align="center" $w="44px" onClick={() => toggleSort("points")} style={{ cursor: "pointer" }}>Pts</Th>
               <Th $align="center" $w="44px" onClick={() => toggleSort("wins")} style={{ cursor: "pointer" }}>V</Th>
               <Th $align="center" $w="44px" onClick={() => toggleSort("draws")} style={{ cursor: "pointer" }}>E</Th>
               <Th $align="center" $w="44px" onClick={() => toggleSort("losses")} style={{ cursor: "pointer" }}>D</Th>
               <Th $align="center" $w="52px" onClick={() => toggleSort("goals")} style={{ cursor: "pointer" }}>GF</Th>
               <Th $align="center" $w="52px" onClick={() => toggleSort("assists")} style={{ cursor: "pointer" }}>A</Th>
-              <Th $align="center" $w="56px" onClick={() => toggleSort("points")} style={{ cursor: "pointer" }}>Pts</Th>
+              <Th $align="center" $w="50px" onClick={() => toggleSort("games")} style={{ cursor: "pointer" }}>J</Th>
 
-              <Th $align="center" $w="100px">Ult 5</Th>
+              <Th $align="center" $w="80px">Ult 3</Th>
             </tr>
           </thead>
 
@@ -124,8 +125,12 @@ export default function Classification() {
             ) : (
               ordered.map((p, idx) => {
                 // ✅ POSIÇÃO OFICIAL (não muda quando você ordena por outra coluna)
-                const currentRank = typeof p.rank === "number" ? p.rank : idx + 1;
-                const prevRank = typeof p.prevRank === "number" ? p.prevRank : null;
+               // ✅ posição real = posição na lista já ordenada
+              const currentRank = idx + 1;
+
+              // ✅ seta compara com a posição anterior salva no Firestore
+              const prevRank = typeof p.prevRank === "number" ? p.prevRank : null;
+
 
                 let dir = null;
                 let delta = 0;
@@ -168,17 +173,17 @@ export default function Classification() {
                       </PlayerCell>
                     </Td>
 
-                    <Td $align="center" $w="44px">{p.games ?? 0}</Td>
+                    <Td $align="center" $w="44px">{p.points ?? 0}</Td>
                     <Td $align="center" $w="44px">{p.wins ?? 0}</Td>
                     <Td $align="center" $w="44px">{p.draws ?? 0}</Td>
                     <Td $align="center" $w="44px">{p.losses ?? 0}</Td>
                     <Td $align="center" $w="52px">{p.goals ?? 0}</Td>
                     <Td $align="center" $w="52px">{p.assists ?? 0}</Td>
-                    <Td $align="center" $w="56px"><Pts>{p.points ?? 0}</Pts></Td>
+                    <Td $align="center" $w="56px"><Pts>{p.games ?? 0}</Pts></Td>
 
-                    <Td $align="center" $w="110px">
+                    <Td $align="center" $w="100px">
                       <Form>
-                        {(p.form ?? []).slice(0, 5).map((r, i) => (
+                        {(p.form ?? []).slice(0, 3).map((r, i) => (
                           <Bubble key={i} value={r}>{r}</Bubble>
                         ))}
                       </Form>
