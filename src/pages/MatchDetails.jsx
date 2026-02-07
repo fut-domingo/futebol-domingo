@@ -68,45 +68,135 @@ const Grid = styled.div`
   }
 `;
 
-// --- Pitch ---
-const PitchRotateWrap = styled.div`
+const PitchCard = styled(Card)`
+  padding: 0; /* tira padding pra ocupar tudo */
+  overflow: hidden;
+`;
+
+
+const PitchField = styled.div`
+  position: relative;
   width: 100%;
-  max-width: 520px;         /* ajuste se quiser maior */
-  aspect-ratio: 16 / 10;    /* deixa “deitado” */
+  height: 620px;
   border-radius: 20px;
   overflow: hidden;
-
-  /* centraliza */
-  display: grid;
-  place-items: center;
-`;
-
-const PitchRotate = styled.div`
-  /* gira o campo */
-  transform: rotate(-90deg) scale(1.05);
-  transform-origin: center;
-
-  /* como girou, precisamos “trocar” largura/altura internas */
-  width: 100%;
-  height: 100%;
-`;
-
-
-const PitchWrap = styled(Card)`
-  padding: 0;
-  overflow: hidden;
-`;
-
-const Pitch = styled.div`
-  position: relative;
-  height: 520px;
   background: linear-gradient(180deg, #1f8a4c 0%, #167a40 100%);
-  border-radius: 18px;
+  box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.10);
+
+  @media (max-width: 980px) {
+    height: 520px;
+  }
 
   @media (max-width: 560px) {
     height: 460px;
   }
 `;
+
+const PitchLines = styled.div`
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+
+  /* linha do meio */
+  &::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 50%;
+    height: 2px;
+    background: rgba(255, 255, 255, 0.35);
+    transform: translateY(-1px);
+  }
+
+  /* círculo central */
+  &::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 140px;
+    height: 140px;
+    border-radius: 999px;
+    border: 2px solid rgba(255, 255, 255, 0.35);
+    transform: translate(-50%, -50%);
+  }
+`;
+
+const TeamTag = styled.div`
+  position: absolute;
+  top: ${(p) => (p.$side === "top" ? "12px" : "auto")};
+  bottom: ${(p) => (p.$side === "bottom" ? "12px" : "auto")};
+  left: 12px;
+  right: 12px;
+  display: flex;
+  justify-content: space-between;
+  pointer-events: none;
+`;
+
+const TeamPill = styled.div`
+  font-weight: 1000;
+  font-size: 13px;
+  letter-spacing: -0.2px;
+  padding: 8px 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  background: rgba(255, 255, 255, 0.14);
+  color: #fff;
+  backdrop-filter: blur(8px);
+`;
+
+const PlayerSpot = styled.div`
+  position: absolute;
+  transform: translate(-50%, -50%);
+  display: grid;
+  place-items: center;
+  width: 110px; /* era 78 */
+  pointer-events: none;
+`;
+
+const PlayerAvatar = styled.div`
+  width: 46px;
+  height: 46px;
+  border-radius: 999px;
+  overflow: hidden;
+  border: 3px solid rgba(255, 255, 255, 0.75);
+  background: rgba(255, 255, 255, 0.18);
+  box-shadow: 0 10px 18px rgba(0,0,0,0.25);
+`;
+
+const PlayerName = styled.div`
+  margin-top: 6px;
+  padding: 6px 10px;
+  border-radius: 12px;
+  background: rgba(0, 0, 0, 0.18);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  color: #fff;
+  font-weight: 1000;
+  font-size: 12px;
+  width: 110px;
+  text-align: center;
+
+  /* permite 2 linhas tipo Google */
+  white-space: normal;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+`;
+
+const PlayerRating = styled.div`
+  margin-top: 6px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  color: #fff;
+  font-weight: 1000;
+  font-size: 12px;
+`;
+
+
 
 const MidLine = styled.div`
   position: absolute;
@@ -149,41 +239,49 @@ const SideLabel = styled.div`
   backdrop-filter: blur(8px);
 `;
 
-const PlayerDot = styled.div`
-  position: absolute;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  max-width: 60%;
 
-  /* ✅ Como o campo gira -90°, a gente gira o jogador +90° pra ficar “reto” */
-  transform: translateY(-50%) rotate(90deg);
-  transform-origin: center;
-`;
-
-
-const Avatar = styled.div`
-  width: 30px;
-  height: 30px;
+const RatingPill = styled.div`
+  padding: 4px 10px;
   border-radius: 999px;
-  overflow: hidden;
-  border: 2px solid rgba(255, 255, 255, 0.65);
-  background: rgba(255, 255, 255, 0.18);
-  flex: 0 0 auto;
-`;
-
-const NamePill = styled.div`
-  padding: 6px 10px;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.14);
+  background: rgba(0, 0, 0, 0.18);
   border: 1px solid rgba(255, 255, 255, 0.22);
   color: #fff;
   font-weight: 1000;
-  font-size: 12px;
-  white-space: nowrap;
+  font-size: 11px;
+  line-height: 1;
+  backdrop-filter: blur(8px);
+`;
+
+const PlayerMarker = styled.div`
+  position: absolute;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  width: 86px;
+  pointer-events: none;
+`;
+
+const Avatar = styled.div`
+  width: 44px;
+  height: 44px;
+  border-radius: 999px;
   overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 180px; /* ✅ evita quebrar/estourar */
+  border: 3px solid rgba(255, 255, 255, 0.7);
+  background: rgba(255, 255, 255, 0.18);
+  box-shadow: 0 10px 24px rgba(0,0,0,0.18);
+`;
+
+
+const RatingBadge = styled.div`
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-weight: 1000;
+  font-size: 12px;
+  color: #fff;
+  background: rgba(0, 0, 0, 0.28);
+  border: 1px solid rgba(255, 255, 255, 0.25);
   backdrop-filter: blur(8px);
 `;
 
@@ -249,25 +347,137 @@ function brDate(s) {
   return `${d}/${m}/${y}`;
 }
 
-function hasPos(p, key) {
-  const arr = Array.isArray(p?.positions) ? p.positions : [];
-  return arr.includes(key);
+// function hasPos(p, key) {
+//   const arr = Array.isArray(p?.positions) ? p.positions : [];
+//   return arr.includes(key);
+// }
+
+function hasPos(player, pos) {
+  if (!player) return false;
+  if (Array.isArray(player.positions)) {
+    return player.positions.includes(pos);
+  }
+  if (typeof player.position === "string") {
+    return player.position === pos;
+  }
+  return false;
 }
 
-function orderForPitch(p) {
-  // Prioridade de linhas no campo
-  if (hasPos(p, "ZG")) return 0;
-  if (hasPos(p, "MC") || hasPos(p, "MEI")) return 1;
-  if (hasPos(p, "ATA")) return 2;
-  return 3;
+
+
+// ======= FORMATION (estilo Google) =======
+
+const POS_ORDER = ["ZG", "VOL", "MC", "MEI", "ATA"];
+
+// Y do TIME DE CIMA (em %). TIME DE BAIXO = espelhado.
+const Y_TOP = {
+  ZG: 18,
+  VOL: 30,
+  MC: 40,
+  MEI: 46,
+  ATA: 52, // ataque mais perto do meio
+};
+
+function getPrimaryPos(p) {
+  for (const pos of POS_ORDER) {
+    if (hasPos(p, pos)) return pos;
+  }
+  return "MC"; // fallback
 }
 
-function makeRows(players) {
-  const list = [...(players || [])];
-  list.sort((a, b) => orderForPitch(a) - orderForPitch(b));
-  const rows = [[], [], [], []];
-  for (const p of list) rows[orderForPitch(p)].push(p);
-  return rows;
+function groupByPos(players) {
+  const groups = { ZG: [], VOL: [], MC: [], MEI: [], ATA: [] };
+  for (const p of players || []) {
+    const k = getPrimaryPos(p);
+    groups[k].push(p);
+  }
+  return groups;
+}
+
+function xPositions(n, min = 18, max = 82) {
+  if (!n) return [];
+  if (n === 1) return [50];
+  const step = (max - min) / (n - 1);
+  return Array.from({ length: n }, (_, i) => min + step * i);
+}
+
+// side: "top" | "bottom"
+function renderTeamOnPitch(players, side) {
+  const groups = groupByPos(players);
+
+  return POS_ORDER.flatMap((posKey) => {
+    const list = groups[posKey] || [];
+    if (list.length === 0) return [];
+
+    const xs = xPositions(list.length);
+    const baseY = Y_TOP[posKey] ?? 40;
+    const y = side === "top" ? baseY : 100 - baseY;
+
+    return list.map((p, idx) => {
+      const x = xs[idx] ?? 50;
+      const ratingText =
+        p?.rating && Number(p.rating) > 0 ? Number(p.rating).toFixed(2) : "—";
+
+      return (
+        <PlayerSpot
+          key={`${side}-${posKey}-${p.playerId || p.id || p.name}-${idx}`}
+          style={{ left: `${x}%`, top: `${y}%` }}
+          title={p.name}
+        >
+          <PlayerAvatar>
+            {p.photoURL ? (
+              <img
+                src={p.photoURL}
+                alt={p.name}
+                style={{ width: "100%", height: "100%", objectFit: "cover" }}
+              />
+            ) : null}
+          </PlayerAvatar>
+
+          <PlayerName>{p.name}</PlayerName>
+          <PlayerRating>{ratingText}</PlayerRating>
+        </PlayerSpot>
+      );
+    });
+  });
+}
+
+
+function primaryPos(p) {
+  // prioridade (MEI separado do MC)
+  if (hasPos(p, "ZG")) return "ZG";
+  if (hasPos(p, "MC")) return "MC";
+  if (hasPos(p, "MEI")) return "MEI";
+  if (hasPos(p, "ATA")) return "ATA";
+  return "OUT";
+}
+
+function buildLines(players) {
+  const groups = {
+    ZG: [],
+    MC: [],
+    MEI: [],
+    ATA: [],
+    OUT: [],
+  };
+
+  for (const p of players || []) {
+    groups[primaryPos(p)].push(p);
+  }
+
+  // monta apenas as linhas que existem (sem zeros)
+  const order = ["ZG", "MC", "MEI", "ATA", "OUT"];
+  const lines = order
+    .map((k) => ({ key: k, players: groups[k] }))
+    .filter((x) => x.players.length > 0);
+
+  return lines;
+}
+
+function formationLabel(lines) {
+  // ex: 3-2-1-2 (não mostra OUT)
+  const filtered = lines.filter((l) => l.key !== "OUT");
+  return filtered.map((l) => l.players.length).join("-");
 }
 
 function normalizeMatch(m) {
@@ -355,52 +565,8 @@ export default function MatchDetails() {
     return `${a} x ${b}`;
   }, [match]);
 
-  const rowsA = useMemo(() => makeRows(match?.teamA || []), [match?.teamA]);
-  const rowsB = useMemo(() => makeRows(match?.teamB || []), [match?.teamB]);
 
-  function renderSide(playersRows, side) {
-    // side: "left" (A) or "right" (B)
-    const xBase = side === "left" ? 8 : 52;
-    const xDir = side === "left" ? 1 : -1;
-    const colW = 40; // percentage range inside half
-    const lineY = [
-      74, // ZG
-      52, // MC/MEI
-      30, // ATA
-      14, // outros
-    ];
 
-    return playersRows.flatMap((row, rowIdx) => {
-      const n = row.length || 1;
-      return row.map((p, i) => {
-        const y = lineY[rowIdx] - (n > 1 ? (i - (n - 1) / 2) * 9 : 0);
-        const x = xBase + xDir * (colW * (rowIdx / 3));
-        const style = {
-          left: side === "left" ? `${x}%` : undefined,
-          right: side === "right" ? `${100 - x}%` : undefined,
-          top: `${y}%`,
-          
-          justifyContent: side === "left" ? "flex-start" : "flex-end",
-          flexDirection: side === "left" ? "row" : "row-reverse",
-        };
-
-        return (
-          <PlayerDot key={`${side}-${p.playerId || p.id || p.name}-${i}`} style={style}>
-            <Avatar>
-              {p.photoURL ? (
-                <img
-                  src={p.photoURL}
-                  alt={p.name}
-                  style={{ width: "100%", height: "100%", objectFit: "cover" }}
-                />
-              ) : null}
-            </Avatar>
-            <NamePill title={p.name}>{p.name}</NamePill>
-          </PlayerDot>
-        );
-      });
-    });
-  }
 
   if (loading) {
     return (
@@ -456,18 +622,31 @@ export default function MatchDetails() {
       </Top>
 
       <Grid>
-<PitchRotateWrap>
-  <PitchRotate>
-    <Pitch>
-      <SideLabel style={{ left: 10 }}>{teamLabelA}</SideLabel>
-      <SideLabel style={{ right: 10 }}>{teamLabelB}</SideLabel>
-      <MidLine />
+<PitchCard>
+  <PitchField>
+    <TeamTag $side="top">
+      <TeamPill>{teamLabelB}</TeamPill>
+      <TeamPill>Formação automática</TeamPill>
+    </TeamTag>
 
-      {renderSide(rowsA, "left")}
-      {renderSide(rowsB, "right")}
-    </Pitch>
-  </PitchRotate>
-</PitchRotateWrap>
+    <TeamTag $side="bottom">
+      <TeamPill>{teamLabelA}</TeamPill>
+      <TeamPill>Formação automática</TeamPill>
+    </TeamTag>
+
+    <PitchLines />
+
+    {/* Time Vermelho em cima */}
+{/* Time de CIMA (ex: Vermelho) */}
+{renderTeamOnPitch(match.teamB, "top")}
+
+{/* Time de BAIXO (ex: Azul) */}
+{renderTeamOnPitch(match.teamA, "bottom")}
+
+
+  </PitchField>
+</PitchCard>
+
 
         <StatsCard>
           <Tabs>
