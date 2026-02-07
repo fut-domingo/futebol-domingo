@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { usePlayers } from "../hooks/usePlayers";
 import { Link, useParams } from "react-router-dom";
 import styled from "styled-components";
 import { doc, getDoc } from "firebase/firestore";
@@ -277,8 +278,8 @@ function normalizeMatch(m) {
     assists: Number(x?.assists || 0),
     shotsOnTarget: Number(x?.shotsOnTarget || 0),
     shots: Number(x?.shots || 0),
-    passesAccurate: Number(x?.passesAccurate || 0),
-    passes: Number(x?.passes || 0),
+    passesCompleted: Number(x?.passesCompleted || 0),
+    passesErrado: Number(x?.passesErrado || 0),
     tackles: Number(x?.tackles || 0),
     possessionLost: Number(x?.possessionLost || 0),
     foulsCommitted: Number(x?.foulsCommitted || 0),
@@ -328,6 +329,24 @@ export default function MatchDetails() {
     const b = match?.teamBName || "Time Vermelho";
     return `${a} x ${b}`;
   }, [match]);
+
+  const get = (p, key) => {
+    switch (key) {
+      case "goals": return p.goals ?? 0;
+      case "assists": return p.assists ?? 0;
+      case "golContra": return p.golContra ?? 0;
+      case "shotsOnTarget": return p.shotsOnTarget ?? 0;
+      case "shots": return p.shots ?? 0;
+      case "passesCompleted": return p.passesCompleted ?? 0;
+      case "passesErrado": return p.passesErrado ?? 0;
+      case "tackles": return p.tackles ?? 0;
+      case "possessionLost": return p.possessionLost ?? 0;
+      case "foulsCommitted": return p.foulsCommitted ?? 0;
+      case "foulsSuffered": return p.foulsSuffered ?? 0;
+      case "rating": return p.rating ?? 0;
+      default: return 0;
+    }
+  };
 
   const scoreLine = useMemo(() => {
     if (!match) return "";
@@ -484,7 +503,7 @@ export default function MatchDetails() {
                   {tab === "passe" ? (
                     <>
                       <th>Passes certos</th>
-                      <th>Passes</th>
+                      <th>Passes Errados</th>
                       <th>Nota</th>
                     </>
                   ) : null}
@@ -522,8 +541,8 @@ export default function MatchDetails() {
 
                     {tab === "passe" ? (
                       <>
-                        <td>{p.passesAccurate}</td>
-                        <td>{p.passes}</td>
+                        <td>{p.passesCompleted}</td>
+                        <td>{p.passesErrado}</td>
                         <td style={{ fontWeight: 1000 }}>{p.rating ? p.rating.toFixed(2) : "—"}</td>
                       </>
                     ) : null}
@@ -531,7 +550,7 @@ export default function MatchDetails() {
                     {tab === "defesa" ? (
                       <>
                         <td>{p.tackles}</td>
-                        <td>{p.possessionLost}</td>
+                        <td>{p.dispossessions}</td>
                         <td style={{ fontWeight: 1000 }}>{p.rating ? p.rating.toFixed(2) : "—"}</td>
                       </>
                     ) : null}

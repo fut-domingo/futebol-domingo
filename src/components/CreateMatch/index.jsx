@@ -39,7 +39,7 @@ const STAT_FIELDS = [
   { key: "shotsOnTarget", label: "Chutes no gol" },
   { key: "shots", label: "Chutes" },
   { key: "passesErrado", label: "Passes Errado" },
-  { key: "passesCompleted", label: "Passes certos" },
+  { key: "passesCompleted", label: "Passes Certos" },
   { key: "tackles", label: "Desarmes" },
   { key: "dispossessions", label: "Perda de posse" },
   { key: "foulsCommitted", label: "Faltas cometidas" },
