@@ -35,9 +35,10 @@ const btnStyle = {
 const STAT_FIELDS = [
   { key: "goals", label: "Gols" },
   { key: "assists", label: "Assistências" },
+  { key: "golContra", label: "Gol Contra" },
   { key: "shotsOnTarget", label: "Chutes no gol" },
   { key: "shots", label: "Chutes" },
-  { key: "passes", label: "Passes" },
+  { key: "passesErrado", label: "Passes Errado" },
   { key: "passesCompleted", label: "Passes certos" },
   { key: "tackles", label: "Desarmes" },
   { key: "dispossessions", label: "Perda de posse" },
@@ -102,11 +103,14 @@ export default function CreateMatch() {
     const payload = {
   ...player,
   goals: 0,
+
+
   assists: 0,
+  golContra:0,
   shotsOnTarget: 0,
   shots: 0,
-  passes: 0,
   passesCompleted: 0,
+  passesErrado: 0,
   tackles: 0,
   dispossessions: 0,
   foulsCommitted: 0,
@@ -240,9 +244,10 @@ export default function CreateMatch() {
   const stats = {
     goals: Number(p.goals || 0),
     assists: Number(p.assists || 0),
+    golContra: Number(p.golContra || 0),
     shotsOnTarget: Number(p.shotsOnTarget || 0),
     shots: Number(p.shots || 0),
-    passes: Number(p.passes || 0),
+    passesErrado: Number(p.passesErrado || 0),
     passesCompleted: Number(p.passesCompleted || 0),
     tackles: Number(p.tackles || 0),
     dispossessions: Number(p.dispossessions || 0),
@@ -264,9 +269,10 @@ export default function CreateMatch() {
   const stats = {
     goals: Number(p.goals || 0),
     assists: Number(p.assists || 0),
+    golContra: Number(p.golContra || 0),
     shotsOnTarget: Number(p.shotsOnTarget || 0),
     shots: Number(p.shots || 0),
-    passes: Number(p.passes || 0),
+    passesErrado: Number(p.passesErrado || 0),
     passesCompleted: Number(p.passesCompleted || 0),
     tackles: Number(p.tackles || 0),
     dispossessions: Number(p.dispossessions || 0),

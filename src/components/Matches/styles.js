@@ -151,7 +151,7 @@ export const TeamColTitleRed = styled.div`
    - avatar + nome + chips
    - nome ganha o máximo de espaço possível */
 export const PlayerRow = styled.div`
-  // display: ;
+  display: flex;
   align-items: center;
   gap: 10px;
 
@@ -223,4 +223,18 @@ export const FooterNote = styled.div`
   text-align: center;
   font-size: 12px;
   color: rgba(42,0,79,0.6);
+`;
+
+export const DetailsBtn = styled.a`
+  margin-top: 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 14px;
+  border-radius: 999px;
+  border: 1px solid rgba(224,216,255,0.85);
+  background: rgba(255,255,255,0.9);
+  color: #2a004f;
+  font-weight: 1000;
+  text-decoration: none;
 `;

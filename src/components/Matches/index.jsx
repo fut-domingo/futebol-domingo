@@ -25,6 +25,7 @@ import {
   ChipGoal,
   ChipAssist,
   FooterNote,
+  DetailsBtn,
 } from "./styles";
 
 function initials(name = "") {
@@ -202,6 +203,10 @@ export default function Matches() {
             <FooterNote>
               Partida {idx + 1} de {matches.length}
             </FooterNote>
+
+            <div style={{ textAlign: "center" }}>
+                          <DetailsBtn href={`#/partida/${current.id}`}>Ver campo e estatísticas</DetailsBtn>
+                        </div>
           </TeamsCard>
         </>
       )}

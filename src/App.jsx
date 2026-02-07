@@ -6,11 +6,13 @@ import PartidasAdmin from "./pages/PartidasAdmin";
 import EditarPartida from "./pages/EditarPartida";
 import ProtectedRoute from "./components/ProtectedRoute";
 import CriarPartida from "./pages/CriarPartida";
+import MatchDetails from "./pages/MatchDetails";
 
 export default function App() {
   return (
       <Routes>
         <Route path="/" element={<Home />} />
+        <Route path="/partida/:id" element={<MatchDetails />} />
         <Route path="/sorteio" element={<Sorteio />} />
 
         <Route path="/admin/partidas" element={
