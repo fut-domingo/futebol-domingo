@@ -149,53 +149,49 @@ const TeamPill = styled.div`
 const PlayerSpot = styled.div`
   position: absolute;
   transform: translate(-50%, -50%);
-  display: grid;
-  place-items: center;
-  width: 110px; /* era 78 */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  width: 86px;        /* menor */
   pointer-events: none;
 `;
 
 const PlayerAvatar = styled.div`
-  width: 46px;
-  height: 46px;
+  width: 38px;        /* menor */
+  height: 38px;
   border-radius: 999px;
   overflow: hidden;
-  border: 3px solid rgba(255, 255, 255, 0.75);
+  border: 2px solid rgba(255, 255, 255, 0.75);
   background: rgba(255, 255, 255, 0.18);
-  box-shadow: 0 10px 18px rgba(0,0,0,0.25);
 `;
 
 const PlayerName = styled.div`
-  margin-top: 6px;
-  padding: 6px 10px;
-  border-radius: 12px;
-  background: rgba(0, 0, 0, 0.18);
+  padding: 4px 8px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.22);
   border: 1px solid rgba(255, 255, 255, 0.22);
   color: #fff;
-  font-weight: 1000;
-  font-size: 12px;
-  width: 110px;
+  font-weight: 900;
+  font-size: 10px;
+  width: 86px;
   text-align: center;
 
-  /* permite 2 linhas tipo Google */
-  white-space: normal;
+  /* 1 linha só, com reticências */
+  white-space: nowrap;
   overflow: hidden;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
+  text-overflow: ellipsis;
 `;
 
 const PlayerRating = styled.div`
-  margin-top: 6px;
-  padding: 6px 10px;
+  padding: 3px 8px;
   border-radius: 999px;
   background: rgba(0, 0, 0, 0.35);
   border: 1px solid rgba(255, 255, 255, 0.22);
   color: #fff;
-  font-weight: 1000;
-  font-size: 12px;
+  font-weight: 900;
+  font-size: 10px;
 `;
-
 
 
 const MidLine = styled.div`
@@ -347,10 +343,6 @@ function brDate(s) {
   return `${d}/${m}/${y}`;
 }
 
-// function hasPos(p, key) {
-//   const arr = Array.isArray(p?.positions) ? p.positions : [];
-//   return arr.includes(key);
-// }
 
 function hasPos(player, pos) {
   if (!player) return false;
@@ -367,118 +359,6 @@ function hasPos(player, pos) {
 
 // ======= FORMATION (estilo Google) =======
 
-const POS_ORDER = ["ZG", "VOL", "MC", "MEI", "ATA"];
-
-// Y do TIME DE CIMA (em %). TIME DE BAIXO = espelhado.
-const Y_TOP = {
-  ZG: 18,
-  VOL: 30,
-  MC: 40,
-  MEI: 46,
-  ATA: 52, // ataque mais perto do meio
-};
-
-function getPrimaryPos(p) {
-  for (const pos of POS_ORDER) {
-    if (hasPos(p, pos)) return pos;
-  }
-  return "MC"; // fallback
-}
-
-function groupByPos(players) {
-  const groups = { ZG: [], VOL: [], MC: [], MEI: [], ATA: [] };
-  for (const p of players || []) {
-    const k = getPrimaryPos(p);
-    groups[k].push(p);
-  }
-  return groups;
-}
-
-function xPositions(n, min = 18, max = 82) {
-  if (!n) return [];
-  if (n === 1) return [50];
-  const step = (max - min) / (n - 1);
-  return Array.from({ length: n }, (_, i) => min + step * i);
-}
-
-// side: "top" | "bottom"
-function renderTeamOnPitch(players, side) {
-  const groups = groupByPos(players);
-
-  return POS_ORDER.flatMap((posKey) => {
-    const list = groups[posKey] || [];
-    if (list.length === 0) return [];
-
-    const xs = xPositions(list.length);
-    const baseY = Y_TOP[posKey] ?? 40;
-    const y = side === "top" ? baseY : 100 - baseY;
-
-    return list.map((p, idx) => {
-      const x = xs[idx] ?? 50;
-      const ratingText =
-        p?.rating && Number(p.rating) > 0 ? Number(p.rating).toFixed(2) : "—";
-
-      return (
-        <PlayerSpot
-          key={`${side}-${posKey}-${p.playerId || p.id || p.name}-${idx}`}
-          style={{ left: `${x}%`, top: `${y}%` }}
-          title={p.name}
-        >
-          <PlayerAvatar>
-            {p.photoURL ? (
-              <img
-                src={p.photoURL}
-                alt={p.name}
-                style={{ width: "100%", height: "100%", objectFit: "cover" }}
-              />
-            ) : null}
-          </PlayerAvatar>
-
-          <PlayerName>{p.name}</PlayerName>
-          <PlayerRating>{ratingText}</PlayerRating>
-        </PlayerSpot>
-      );
-    });
-  });
-}
-
-
-function primaryPos(p) {
-  // prioridade (MEI separado do MC)
-  if (hasPos(p, "ZG")) return "ZG";
-  if (hasPos(p, "MC")) return "MC";
-  if (hasPos(p, "MEI")) return "MEI";
-  if (hasPos(p, "ATA")) return "ATA";
-  return "OUT";
-}
-
-function buildLines(players) {
-  const groups = {
-    ZG: [],
-    MC: [],
-    MEI: [],
-    ATA: [],
-    OUT: [],
-  };
-
-  for (const p of players || []) {
-    groups[primaryPos(p)].push(p);
-  }
-
-  // monta apenas as linhas que existem (sem zeros)
-  const order = ["ZG", "MC", "MEI", "ATA", "OUT"];
-  const lines = order
-    .map((k) => ({ key: k, players: groups[k] }))
-    .filter((x) => x.players.length > 0);
-
-  return lines;
-}
-
-function formationLabel(lines) {
-  // ex: 3-2-1-2 (não mostra OUT)
-  const filtered = lines.filter((l) => l.key !== "OUT");
-  return filtered.map((l) => l.players.length).join("-");
-}
 
 function normalizeMatch(m) {
   // Match docs guard: some old matches may not have the new stats.
@@ -504,11 +384,186 @@ function normalizeMatch(m) {
   };
 }
 
+// ======= FORMATION (fixa e padronizada) =======
+// Regras principais (como você pediu):
+// - ZG fica numa linha (top 17% / bottom 83%)
+// - VOL + MC ficam juntos na mesma linha (top 28% / bottom 77%)
+// - ATA fica mais perto do meio (top 43% / bottom 60%)
+// - MEI (se existir) fica entre meio e ataque (top 35% / bottom 66%)
+// - Distribuição de X depende da quantidade (1,2,3...) e segue seus valores.
+
+const LINE = ["ZG", "MID", "MEI", "ATA"];
+
+// prioridade pra decidir "linha" do jogador
+function primaryLine(p) {
+  if (hasPos(p, "ZG")) return "ZG";
+  if (hasPos(p, "ATA")) return "ATA";
+  if (hasPos(p, "VOL") || hasPos(p, "MC")) return "MID";
+  if (hasPos(p, "MEI")) return "MEI";
+  return "MID";
+}
+
+function groupByLine(players) {
+  const g = { ZG: [], MID: [], MEI: [], ATA: [] };
+  for (const p of players || []) {
+    g[primaryLine(p)].push(p);
+  }
+  return g;
+}
+
+function xForCount(count, preset) {
+  if (preset && preset[count]) return preset[count];
+  if (count <= 0) return [];
+  if (count === 1) return [50];
+  if (count === 2) return [35, 65];
+  if (count === 3) return [25, 50, 75];
+  // 4+ (fallback)
+  const min = 18, max = 82;
+  const step = (max - min) / (count - 1);
+  return Array.from({ length: count }, (_, i) => min + step * i);
+}
+
+function getCoords(teamSide, lineKey, count, idx) {
+  const pick = (xs, top) => ({ left: xs[idx] ?? 50, top });
+
+  // ===== TIME DE CIMA (Vermelho) =====
+  if (teamSide === "top") {
+    if (lineKey === "ZG") {
+      const xs = xForCount(count, {
+        1: [50],
+        2: [30, 70],
+        3: [12, 50, 88],
+      });
+      return pick(xs, 17);
+    }
+
+    if (lineKey === "MID") {
+      // VOL + MC juntos
+      const xs = xForCount(count, {
+        1: [50],
+        2: [30, 70],
+        3: [25, 50, 75],
+      });
+      return pick(xs, 28);
+    }
+
+    if (lineKey === "MEI") {
+      const xs = xForCount(count, { 1: [50], 2: [35, 65], 3: [25, 50, 75] });
+      return pick(xs, 35);
+    }
+
+    if (lineKey === "ATA") {
+      // ordem pedida: 1º 88, 2º 50, 3º 13
+      const xs = xForCount(count, {
+        1: [50],
+        2: [35, 65],
+        3: [88, 50, 13],
+      });
+      return pick(xs, 43);
+    }
+  }
+
+  // ===== TIME DE BAIXO (Azul) =====
+  if (teamSide === "bottom") {
+    if (lineKey === "ZG") {
+      const xs = xForCount(count, {
+        1: [50],
+        2: [30, 70],
+        3: [12, 50, 88],
+      });
+      return pick(xs, 85);
+    }
+
+    if (lineKey === "MID") {
+      // VOL + MC juntos
+      if (count === 3) {
+        // seu caso especial: 3 MC/VOL -> um mais alto no centro
+        if (idx === 0) return { left: 85, top: 66 };
+        if (idx === 1) return { left: 30, top: 77 };
+        if (idx === 2) return { left: 70, top: 77 };
+        return { left: 70, top: 77 };
+      }
+      const xs = xForCount(count, {
+        1: [50],
+        2: [30, 70],
+        3: [25, 50, 75],
+      });
+      return pick(xs, 77);
+    }
+
+    if (lineKey === "MEI") {
+      const xs = xForCount(count, { 1: [15], 2: [35, 65], 3: [25, 50, 75] });
+      return pick(xs, 66);
+    }
+
+    if (lineKey === "ATA") {
+      const xs = xForCount(count, {
+        1: [50],
+        2: [35, 65],
+        3: [13, 50, 88],
+      });
+      return pick(xs, 60);
+    }
+  }
+
+  return { left: 50, top: 50 };
+}
+
+function renderTeamFixed(players, teamSide) {
+  const groups = groupByLine(players); // <-- aqui é groupByLine
+
+  const lines = [
+    { key: "ZG",  list: groups.ZG || [] },
+    { key: "MID", list: groups.MID || [] }, // já junta VOL+MC
+    { key: "MEI", list: groups.MEI || [] },
+    { key: "ATA", list: groups.ATA || [] },
+  ];
+
+  return lines.flatMap(({ key, list }) => {
+    const count = list.length;
+
+    return list.map((p, idx) => {
+      const { left, top } = getCoords(teamSide, key, count, idx);
+
+      const ratingText =
+        p?.rating && Number(p.rating) > 0 ? Number(p.rating).toFixed(2) : "—";
+
+      return (
+        <PlayerSpot
+          key={`${teamSide}-${key}-${p.playerId || p.id || p.name}-${idx}`}
+          style={{ left: `${left}%`, top: `${top}%` }}
+        >
+          <PlayerAvatar>
+            {p.photoURL ? (
+              <img
+                src={p.photoURL}
+                alt={p.name}
+                style={{ width: "100%", height: "100%", objectFit: "cover" }}
+              />
+            ) : null}
+          </PlayerAvatar>
+
+          <PlayerName title={p.name}>{p.name}</PlayerName>
+          <PlayerRating>{ratingText}</PlayerRating>
+        </PlayerSpot>
+      );
+    });
+  });
+}
+
+
 export default function MatchDetails() {
   const { id } = useParams();
   const [loading, setLoading] = useState(true);
   const [match, setMatch] = useState(null);
   const [tab, setTab] = useState("geral");
+  // IMPORTANTE: hooks SEMPRE no topo (nunca dentro de if/return)
+  // Pegamos a lista "cadastro" (onde ficam as posições/roles)
+  const playersDb = usePlayers();
+
+  const teamAList = match?.teamA || [];
+  const teamBList = match?.teamB || [];
+
 
   useEffect(() => {
     let alive = true;
@@ -565,8 +620,54 @@ export default function MatchDetails() {
     return `${a} x ${b}`;
   }, [match]);
 
+  // cria um índice BEM tolerante (porque no match às vezes vem id diferente)
+  // Estratégia: indexar por id/playerId/uid e também por nome normalizado.
+  const playersIndex = useMemo(() => {
+    const m = new Map();
+    const norm = (v) => String(v || "").trim().toLowerCase();
+    const put = (k, val) => {
+      const kk = norm(k);
+      if (!kk) return;
+      if (!m.has(kk)) m.set(kk, val);
+    };
 
+    for (const p of playersDb || []) {
+      put(p.playerId, p);
+      put(p.id, p);
+      put(p.uid, p);
+      put(p.name, p);
+      // alguns cadastros usam "nome"
+      put(p.nome, p);
+    }
+    return m;
+  }, [playersDb]);
 
+// injeta positions/position dentro do jogador da partida
+  function enrichTeam(team) {
+    const norm = (v) => String(v || "").trim().toLowerCase();
+
+    return (team || []).map((p) => {
+      const dbp =
+        playersIndex.get(norm(p.playerId)) ||
+        playersIndex.get(norm(p.id)) ||
+        playersIndex.get(norm(p.uid)) ||
+        playersIndex.get(norm(p.name));
+
+      const positionsFromDb = Array.isArray(dbp?.positions) ? dbp.positions : undefined;
+      const positionFromDb = typeof dbp?.position === "string" ? dbp.position : undefined;
+
+      return {
+        ...p,
+        // pega positions do cadastro se não existir na partida
+        positions: Array.isArray(p.positions) ? p.positions : positionsFromDb,
+        // opcional: position string
+        position: typeof p.position === "string" ? p.position : positionFromDb,
+      };
+    });
+  }
+
+  const teamAEnriched = useMemo(() => enrichTeam(teamAList), [teamAList, playersIndex]);
+  const teamBEnriched = useMemo(() => enrichTeam(teamBList), [teamBList, playersIndex]);
 
   if (loading) {
     return (
@@ -601,6 +702,11 @@ export default function MatchDetails() {
   const teamLabelA = match?.teamAName || "Time Azul";
   const teamLabelB = match?.teamBName || "Time Vermelho";
 
+  
+
+
+
+
   const allPlayers = [
     ...(match.teamA || []).map((p) => ({ ...p, __team: teamLabelA })),
     ...(match.teamB || []).map((p) => ({ ...p, __team: teamLabelB })),
@@ -633,15 +739,10 @@ export default function MatchDetails() {
       <TeamPill>{teamLabelA}</TeamPill>
       <TeamPill>Formação automática</TeamPill>
     </TeamTag>
+<PitchLines />
 
-    <PitchLines />
-
-    {/* Time Vermelho em cima */}
-{/* Time de CIMA (ex: Vermelho) */}
-{renderTeamOnPitch(match.teamB, "top")}
-
-{/* Time de BAIXO (ex: Azul) */}
-{renderTeamOnPitch(match.teamA, "bottom")}
+{renderTeamFixed(teamBEnriched, "top")}
+{renderTeamFixed(teamAEnriched, "bottom")}
 
 
   </PitchField>

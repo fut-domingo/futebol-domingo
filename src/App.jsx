@@ -14,6 +14,7 @@ export default function App() {
         <Route path="/" element={<Home />} />
         <Route path="/partida/:id" element={<MatchDetails />} />
         <Route path="/sorteio" element={<Sorteio />} />
+       
 
         <Route path="/admin/partidas" element={
   <ProtectedRoute><PartidasAdmin /></ProtectedRoute>
